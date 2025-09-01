@@ -129,7 +129,7 @@ $apiKey    = "ead4b4a0-162a-4f4b-9846-da29f5696af1";
 
 
 
-//test.bakbak.cn 为测试域名, 正式环境替换为  w3api.startpay.ai
+//test.bakbak.cn 为测试域名, 正式环境替换为  w3api.startpay.ai !!!
 
 
  //GET 示例  API收单/查询订单
