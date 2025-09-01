@@ -15,7 +15,7 @@ function mapToSortedQueryString(array $data): string {
     ksort($data);
     $pairs = [];
     foreach ($data as $k => $v) {
-        $pairs[] = $k . "=" . (string)$v;  // 与 Go 的 fmt.Sprintf("%v", v) 对齐
+        $pairs[] = $k . "=" . (string)$v;  
     }
     return implode("&", $pairs);
 }
@@ -121,8 +121,15 @@ function spPostJson(string $url, array $params, string $apiSecret, string $apiKe
 
 
 
+
+
+//测试环境  示例  key和sec  正式环境替换为 正式环境的key和sec  !!!
 $apiSecret = "xH5sMh07w2pBJoXE3CSUp0QO63tIZaUID6z1EoTkP08=";
 $apiKey    = "ead4b4a0-162a-4f4b-9846-da29f5696af1";
+
+
+
+//test.bakbak.cn 为测试域名, 正式环境替换为  w3api.startpay.ai
 
 
  //GET 示例  API收单/查询订单
