@@ -20,6 +20,25 @@ function mapToSortedQueryString(array $data): string {
     return implode("&", $pairs);
 }
 
+
+/**
+ * 验证签名
+ *
+ * @param string $method    请求方法 "POST" / "GET"
+ * @param string $url       你的回调 URL（必须和配置在 StartPay 后台的一致）
+ * @param array  $params    回调的业务参数（body 或 query 里的参数，排除 header）
+ * @param string $timestamp Header: SP-TIMESTAMP
+ * @param string $sign      Header: SP-SIGN
+ * @param string $apiSecret 商户密钥
+ * @return bool
+ */
+function verifySign(string $method, string $url, array $params, string $timestamp, string $sign, string $apiSecret): bool {
+    $queryForSign = mapToSortedQueryString($params);
+    $strToSign    = $method . $url . "?" . $queryForSign . $timestamp;
+    $expectSign   = signMessage($strToSign, $apiSecret);
+    return $expectSign === $sign;
+}
+
 /**
  * 封装的 GET 请求
  */
@@ -152,3 +171,12 @@ $params = ["mchOrderNo" => "ORDER1872983743393"];
 ];
  $resp = spPostJson($url, $params, $apiSecret, $apiKey);
  echo "POST 响应: $resp\n";
+
+ 
+ 
+ //回调  
+ //请查看  VerifySign  方法
+
+
+
+ 
