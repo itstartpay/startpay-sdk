@@ -1,6 +1,6 @@
 package main
 
-import "startpay-sdk/startpay" 
+import "startpay-go/startpay" 
 import "fmt"
 
 func main() {
