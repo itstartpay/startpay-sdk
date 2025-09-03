@@ -5,8 +5,8 @@ import "fmt"
 
 func main() {
 	// 测试环境 key/secret
-	apiSecret := "xH5sMh07w2pBJoXE3CSUp0QO63tIZaUID6z1EoTkP08="
-	apiKey := "ead4b4a0-162a-4f4b-9846-da29f5696af1"
+	apiSecret := "DRhgZp59xWve7rrB67lD3j84MnyzcWoIzEXqI3Rolgw="
+	apiKey := "6e867b71-37d4-41d1-bbce-a5972d9c718f"
 
 	// GET 示例
 	url1 := "https://test.bakbak.cn/api/public/query_dc_order"
@@ -26,7 +26,6 @@ func main() {
 		"mchOrderNo":     "ORDER1239234230",
 		"digitalCurrency": "USDT",
 		"chain":          "BSC",
-		"desc":           "USDT",
 		"orderAmount":    100,
 		"subject":        "游戏点卡",
 		"detail":         "游戏点卡3个",

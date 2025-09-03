@@ -20,7 +20,6 @@ fn main() {
         "mchOrderNo": "ORDER1239234230",
         "digitalCurrency": "USDT",
         "chain": "BSC",
-        "desc": "USDT",
         "orderAmount": 100,
         "subject": "游戏点卡",
         "detail": "游戏点卡3个",
