@@ -38,7 +38,7 @@ func main() {
 		fmt.Println("POST 响应:", resp2)
 	}
 	
-	//回调  
+	//回调     成功收到期望返回  {"code": 0 ,message:""}    code 不为0 代表接收失败
 	// 请查看  VerifySign  方法
 	
 	

@@ -45,6 +45,7 @@ fn main() {
         "签名字符串",     // 假设 header 里的 SP-SIGN
         api_secret,
     );
-
+	
     println!("验签结果: {}", ok);
+	//回调    成功收到期望返回  {"code": 0 ,message:""}    code 不为0 代表接收失败
 }
