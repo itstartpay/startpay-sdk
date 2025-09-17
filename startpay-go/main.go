@@ -38,8 +38,8 @@ func main() {
 		fmt.Println("POST 响应:", resp2)
 	}
 	
-	//回调     成功收到期望返回  {"code": 0 ,message:""}    code 不为0 代表接收失败
-	// 请查看  VerifySign  方法
+	//回调   响应http状态码为200代表成功,可能因为网络原因多次回调,请做好幂等. 
+	//请查看  VerifySign  方法
 	
 	
 }
