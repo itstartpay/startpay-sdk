@@ -148,17 +148,17 @@ $apiKey    = "ead4b4a0-162a-4f4b-9846-da29f5696af1";
 
 
 
-//test.bakbak.cn 为测试域名, 正式环境替换为  w3api.startpay.ai !!!
+//w3api-test.startpay.ai 为测试域名, 正式环境替换为  w3api.startpay.ai !!!
 
 
  //GET 示例  API收单/查询订单
-$url = "https://test.bakbak.cn/api/public/query_dc_order";
+$url = "https://w3api-test.startpay.ai/api/public/query_dc_order";
 $params = ["mchOrderNo" => "ORDER1872983743393"];
  $resp = spGet($url, $params, $apiSecret, $apiKey);
  echo "GET 响应: $resp\n";
 
  //POST 示例  API收单/创建订单
- $url = "https://test.bakbak.cn/api/public/create_dc_order";
+ $url = "https://w3api-test.startpay.ai/api/public/create_dc_order";
  $params = [
 	"mchOrderNo" => "ORDER1239234230",
 	"digitalCurrency" => "USDT" ,

@@ -10,7 +10,7 @@ fn main() {
         "mchOrderNo": "ORDER1872983743393"
     }).as_object().unwrap().clone();
 
-    match sp_get("https://test.bakbak.cn/api/public/query_dc_order", params1, api_secret, api_key, 10) {
+    match sp_get("https://w3api-test.startpay.ai/api/public/query_dc_order", params1, api_secret, api_key, 10) {
         Ok(resp) => println!("GET 响应: {}", resp),
         Err(err) => eprintln!("GET 错误: {}", err),
     }
@@ -26,7 +26,7 @@ fn main() {
         "notifyUrl": "https://go.com/xxx/callback"
     }).as_object().unwrap().clone();
 
-    match sp_post_json("https://test.bakbak.cn/api/public/create_dc_order", params2, api_secret, api_key, 10) {
+    match sp_post_json("https://w3api-test.startpay.ai/api/public/create_dc_order", params2, api_secret, api_key, 10) {
         Ok(resp) => println!("POST 响应: {}", resp),
         Err(err) => eprintln!("POST 错误: {}", err),
     }
