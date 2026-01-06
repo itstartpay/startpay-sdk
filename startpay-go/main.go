@@ -14,7 +14,7 @@ func main() {
 	// GET 示例
 	url1 := "https://w3api-test.startpay.ai/api/public/query_dc_order"
 	params1 := map[string]interface{}{
-		"mchOrderNo": "ORDER18729837433193",
+		"mchOrderNo": "ORDER187293193",
 	}
 	resp1, err := startpay.SpGet(url1, params1, apiSecret, apiKey, 10)
 	if err != nil {
@@ -26,13 +26,15 @@ func main() {
 	// POST 示例
 	url2 := "https://w3api-test.startpay.ai/api/public/create_dc_order"
 	params2 := map[string]interface{}{
-		"mchOrderNo":      "ORDE13314230",
+		"mchOrderNo":      "ORDE133",
 		"digitalCurrency": "USDT",
 		"chain":           "TRX",
 		"orderAmount":     100,
 		"subject":         "游戏点卡",
 		"detail":          "游戏点卡3个",
 		"notifyUrl":       "https://go.com/xxx/callback",
+		"returnUrl":       "https://java.com/",
+		"custId":          "trump001",
 	}
 	resp2, err := startpay.SpPostJson(url2, params2, apiSecret, apiKey, 10)
 	if err != nil {

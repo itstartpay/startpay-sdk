@@ -24,6 +24,8 @@ fn main() {
         "subject": "游戏点卡",
         "detail": "游戏点卡3个",
         "notifyUrl": "https://go.com/xxx/callback"
+        "returnUrl":       "https://java.com/",
+		"custId":          "trump001"
     }).as_object().unwrap().clone();
 
     match sp_post_json("https://w3api-test.startpay.ai/api/public/create_dc_order", params2, api_secret, api_key, 10) {

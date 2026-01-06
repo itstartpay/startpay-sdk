@@ -166,7 +166,9 @@ $params = ["mchOrderNo" => "ORDER1872983743393"];
 	"orderAmount" => 100,  
 	"subject" => "游戏点卡" ,
 	"detail" => "游戏点卡3个" ,
-	"notifyUrl" => "https://go.com/xxx/callback"
+	"notifyUrl" => "https://go.com/xxx/callback",
+    "returnUrl" =>       "https://java.com/",
+    "custId" =>           "trump001"
 ];
  $resp = spPostJson($url, $params, $apiSecret, $apiKey);
  echo "POST 响应: $resp\n";
