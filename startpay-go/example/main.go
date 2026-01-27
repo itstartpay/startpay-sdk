@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"startpay-go/startpay"
+	"github.com/itstartpay/startpay-sdk/startpay-go/startpay"
 )
 
 func main() {
