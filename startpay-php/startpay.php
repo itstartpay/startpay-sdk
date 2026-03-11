@@ -9,15 +9,51 @@ function signMessage(string $message, string $secret): string {
 
 /**
  * 将参数按 key 升序拼接为 k=v&k2=v2（不做 urlencode；用于签名）
+ * 修复：模拟 Go 的 fmt.Sprintf("%v") 格式化规则
  */
 function mapToSortedQueryString(array $data): string {
     if (empty($data)) return "";
     ksort($data);
     $pairs = [];
     foreach ($data as $k => $v) {
-        $pairs[] = $k . "=" . (string)$v;  
+        $pairs[] = $k . "=" . goValueToString($v);
     }
     return implode("&", $pairs);
+}
+
+/**
+ * 模拟 Go 的 %v 格式化规则
+ */
+function goValueToString(mixed $v): string {
+    if (is_bool($v)) {
+        return $v ? 'true' : 'false';
+    }
+    if (is_int($v) || is_float($v)) {
+        return (string) $v;
+    }
+    if (is_string($v)) {
+        return $v;
+    }
+    if (is_array($v)) {
+        return '[' . implode(' ', array_map('goMapToString', $v)) . ']';
+    }
+    if ($v === null) {
+        return '<nil>';
+    }
+    return json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
+/**
+ * 模拟 Go 对 map 的格式化：map[key1:value1 key2:value2]
+ */
+function goMapToString(array $arr): string {
+    $keys = array_keys($arr);
+    sort($keys);
+    $parts = [];
+    foreach ($keys as $k) {
+        $parts[] = $k . ':' . goValueToString($arr[$k]);
+    }
+    return 'map[' . implode(' ', $parts) . ']';
 }
 
 
@@ -79,7 +115,6 @@ function spGet(string $url, array $params, string $apiSecret, string $apiKey, in
     }
 
     $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
 
     if ($status < 200 || $status >= 300) {
         throw new Exception("HTTP $status: $resp");
@@ -97,7 +132,7 @@ function spPostJson(string $url, array $params, string $apiSecret, string $apiKe
     // 1) 参与签名的 query（就是请求体参数）
     $queryForSign = mapToSortedQueryString($params);
     $strToSign    = "POST" . $url . "?" . $queryForSign . $timestamp;
-	
+    
 
     // 2) 计算签名
     $sign = signMessage($strToSign, $apiSecret);
@@ -129,7 +164,6 @@ function spPostJson(string $url, array $params, string $apiSecret, string $apiKe
     }
 
     $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
 
     if ($status < 200 || $status >= 300) {
         throw new Exception("HTTP $status: $resp");
@@ -169,7 +203,7 @@ $params = ["mchOrderNo" => "ORDER1872983743393"];
 	"notifyUrl" => "https://go.com/xxx/callback",
     "returnUrl" =>       "https://java.com/",
     "custId" =>           "trump001"
-];
+ ];
  $resp = spPostJson($url, $params, $apiSecret, $apiKey);
  echo "POST 响应: $resp\n";
 
