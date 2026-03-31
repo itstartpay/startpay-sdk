@@ -25,8 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-// 假设你的签名工具类和常量都在这里
-// import com.yourpackage.SignatureUtils; 
+ 
 
 @RestController
 @RequestMapping("/iapStartpay/2025/")
@@ -59,7 +58,7 @@ public class OrderApi {
 		String url = CALLBACK_URL; // 使用配置的完整 URL
 
 		// 2. 调用签名验证方法
-		boolean isValid = SignatureUtils.verifySign(method, url, requestBody, spTimestamp, spSign, API_SECRET);
+		boolean isValid = StartPayClient.verifySign(method, url, requestBody, spTimestamp, spSign, API_SECRET);
 
 		// 3. 根据验证结果进行处理
 		if (isValid) {
