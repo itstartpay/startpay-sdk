@@ -1,12 +1,15 @@
 package startpay;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ import java.util.TreeMap;
 
 /**
  * StartPay API 客户端
- * 
+ *
  * <p>提供与 Go SDK 一致的签名和请求逻辑:
  * <ul>
  *   <li>签名算法: HMAC-SHA1 + Base64</li>
@@ -24,21 +27,21 @@ import java.util.TreeMap;
  *   <li>签名字符串: METHOD + URL + "?" + sortedParams + timestamp</li>
  *   <li>嵌套结构格式化: 模拟 Go fmt.Sprintf("%v") 输出格式</li>
  * </ul>
- * 
+ *
  * <p>使用示例:
  * <pre>{@code
  * String apiKey = "your_api_key";
  * String apiSecret = "your_api_secret";
- * 
+ *
  * StartPayClient client = new StartPayClient(apiKey, apiSecret);
- * 
+ *
  * // GET 请求
  * Map<String, Object> params = new HashMap<>();
  * params.put("mchOrderNo", "ORDER123");
  * String resp = StartPayClient.spGet(
  *     "https://w3api-test.startpay.ai/api/public/query_dc_order",
  *     params, apiSecret, apiKey, 10);
- * 
+ *
  * // POST 请求
  * Map<String, Object> postParams = new HashMap<>();
  * postParams.put("mchOrderNo", "ORDER456");
@@ -179,23 +182,21 @@ public class StartPayClient {
             }
         }
 
-        try {
-            URL url = new URL(fullURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setConnectTimeout(timeoutSec * 1000);
-            conn.setReadTimeout(timeoutSec * 1000);
-            conn.setRequestProperty("SP-API-KEY", apiKey);
-            conn.setRequestProperty("SP-SIGN", sign);
-            conn.setRequestProperty("SP-TIMESTAMP", timestamp);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(fullURL);
+            httpGet.setHeader("SP-API-KEY", apiKey);
+            httpGet.setHeader("SP-SIGN", sign);
+            httpGet.setHeader("SP-TIMESTAMP", timestamp);
 
-            int statusCode = conn.getResponseCode();
-            String response = readResponse(conn);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                String body = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-            if (statusCode < 200 || statusCode >= 300) {
-                return "HTTP " + statusCode + ": " + response;
+                if (statusCode < 200 || statusCode >= 300) {
+                    return "HTTP " + statusCode + ": " + body;
+                }
+                return body;
             }
-            return response;
         } catch (Exception e) {
             throw new RuntimeException("SpGet request failed: " + e.getMessage(), e);
         }
@@ -226,29 +227,23 @@ public class StartPayClient {
 
         String jsonBody = toJson(params);
 
-        try {
-            URL url = new URL(apiURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setConnectTimeout(timeoutSec * 1000);
-            conn.setReadTimeout(timeoutSec * 1000);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("SP-API-KEY", apiKey);
-            conn.setRequestProperty("SP-SIGN", sign);
-            conn.setRequestProperty("SP-TIMESTAMP", timestamp);
-            conn.setDoOutput(true);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(apiURL);
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setHeader("SP-API-KEY", apiKey);
+            httpPost.setHeader("SP-SIGN", sign);
+            httpPost.setHeader("SP-TIMESTAMP", timestamp);
+            httpPost.setEntity(new StringEntity(jsonBody, StandardCharsets.UTF_8));
 
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(jsonBody.getBytes(StandardCharsets.UTF_8));
+            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                String body = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+                if (statusCode < 200 || statusCode >= 300) {
+                    return "HTTP " + statusCode + ": " + body;
+                }
+                return body;
             }
-
-            int statusCode = conn.getResponseCode();
-            String response = readResponse(conn);
-
-            if (statusCode < 200 || statusCode >= 300) {
-                return "HTTP " + statusCode + ": " + response;
-            }
-            return response;
         } catch (Exception e) {
             throw new RuntimeException("SpPost request failed: " + e.getMessage(), e);
         }
@@ -330,19 +325,5 @@ public class StartPayClient {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
-    }
-
-    private static String readResponse(HttpURLConnection conn) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(
-                        conn.getResponseCode() >= 400 ? conn.getErrorStream() : conn.getInputStream(),
-                        StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-        }
-        return sb.toString();
     }
 }
